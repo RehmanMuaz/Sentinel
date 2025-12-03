@@ -813,6 +813,22 @@
           }
         }
       },
+      "Microsoft.Extensions.Configuration.EnvironmentVariables/10.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/net10.0/_._": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net10.0/_._": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/net8.0/_._": {}
+        }
+      },
       "Microsoft.Extensions.DependencyInjection.AutoActivation/10.0.0": {
         "type": "package",
         "compile": {
@@ -1264,6 +1280,37 @@
         },
         "runtime": {
           "lib/net10.0/OpenIddict.Core.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "OpenIddict.EntityFrameworkCore/7.2.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.EntityFrameworkCore.Relational": "10.0.0",
+          "OpenIddict.Core": "7.2.0",
+          "OpenIddict.EntityFrameworkCore.Models": "7.2.0"
+        },
+        "compile": {
+          "lib/net10.0/OpenIddict.EntityFrameworkCore.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net10.0/OpenIddict.EntityFrameworkCore.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "OpenIddict.EntityFrameworkCore.Models/7.2.0": {
+        "type": "package",
+        "compile": {
+          "lib/net10.0/OpenIddict.EntityFrameworkCore.Models.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net10.0/OpenIddict.EntityFrameworkCore.Models.dll": {
             "related": ".xml"
           }
         }
@@ -1745,6 +1792,46 @@
             "assetType": "runtime",
             "rid": "win"
           }
+        }
+      },
+      "Sentinel.Application/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "dependencies": {
+          "Microsoft.EntityFrameworkCore": "10.0.0",
+          "Npgsql.EntityFrameworkCore.PostgreSQL": "10.0.0",
+          "OpenIddict.EntityFrameworkCore": "7.2.0",
+          "Sentinel.Domain": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Sentinel.Application.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Sentinel.Application.dll": {}
+        }
+      },
+      "Sentinel.Domain/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "compile": {
+          "bin/placeholder/Sentinel.Domain.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Sentinel.Domain.dll": {}
+        }
+      },
+      "Sentinel.Infrastructure/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "dependencies": {
+          "Sentinel.Application": "1.0.0",
+          "Sentinel.Domain": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Sentinel.Infrastructure.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Sentinel.Infrastructure.dll": {}
         }
       }
     }
@@ -3064,6 +3151,35 @@
         "microsoft.extensions.compliance.abstractions.nuspec"
       ]
     },
+    "Microsoft.Extensions.Configuration.EnvironmentVariables/10.0.0": {
+      "sha512": "TmFegsI/uCdwMBD4yKpmO+OkjVNHQL49Dh/ep83NI5rPUEoBK9OdsJo1zURc1A2FuS/R/Pos3wsTjlyLnguBLA==",
+      "type": "package",
+      "path": "microsoft.extensions.configuration.environmentvariables/10.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "PACKAGE.md",
+        "THIRD-PARTY-NOTICES.TXT",
+        "buildTransitive/net461/Microsoft.Extensions.Configuration.EnvironmentVariables.targets",
+        "buildTransitive/net462/_._",
+        "buildTransitive/net8.0/_._",
+        "buildTransitive/netcoreapp2.0/Microsoft.Extensions.Configuration.EnvironmentVariables.targets",
+        "lib/net10.0/Microsoft.Extensions.Configuration.EnvironmentVariables.dll",
+        "lib/net10.0/Microsoft.Extensions.Configuration.EnvironmentVariables.xml",
+        "lib/net462/Microsoft.Extensions.Configuration.EnvironmentVariables.dll",
+        "lib/net462/Microsoft.Extensions.Configuration.EnvironmentVariables.xml",
+        "lib/net8.0/Microsoft.Extensions.Configuration.EnvironmentVariables.dll",
+        "lib/net8.0/Microsoft.Extensions.Configuration.EnvironmentVariables.xml",
+        "lib/net9.0/Microsoft.Extensions.Configuration.EnvironmentVariables.dll",
+        "lib/net9.0/Microsoft.Extensions.Configuration.EnvironmentVariables.xml",
+        "lib/netstandard2.0/Microsoft.Extensions.Configuration.EnvironmentVariables.dll",
+        "lib/netstandard2.0/Microsoft.Extensions.Configuration.EnvironmentVariables.xml",
+        "microsoft.extensions.configuration.environmentvariables.10.0.0.nupkg.sha512",
+        "microsoft.extensions.configuration.environmentvariables.nuspec",
+        "useSharedDesignerContext.txt"
+      ]
+    },
     "Microsoft.Extensions.DependencyInjection.AutoActivation/10.0.0": {
       "sha512": "5t17Z77ysTmEla9/xUiOJLYLc8/9OyzlZJRxjTaSyiCi0mEroR0PwldKZsfwFLUOMSaNP6vngptYFbw7stO0rw==",
       "type": "package",
@@ -3774,6 +3890,62 @@
         "lib/netstandard2.1/OpenIddict.Core.xml",
         "openiddict.core.7.2.0.nupkg.sha512",
         "openiddict.core.nuspec"
+      ]
+    },
+    "OpenIddict.EntityFrameworkCore/7.2.0": {
+      "sha512": "dvahXEFDIYRPH3xy5ZqHklyLQNca4NG6YRPx8f1FWHs+mGCJ1FtM8gqJw3KzUkiRTtKUYzlM8NEcD3BqslEP7g==",
+      "type": "package",
+      "path": "openiddict.entityframeworkcore/7.2.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "lib/net10.0/OpenIddict.EntityFrameworkCore.dll",
+        "lib/net10.0/OpenIddict.EntityFrameworkCore.xml",
+        "lib/net462/OpenIddict.EntityFrameworkCore.dll",
+        "lib/net462/OpenIddict.EntityFrameworkCore.xml",
+        "lib/net472/OpenIddict.EntityFrameworkCore.dll",
+        "lib/net472/OpenIddict.EntityFrameworkCore.xml",
+        "lib/net48/OpenIddict.EntityFrameworkCore.dll",
+        "lib/net48/OpenIddict.EntityFrameworkCore.xml",
+        "lib/net8.0/OpenIddict.EntityFrameworkCore.dll",
+        "lib/net8.0/OpenIddict.EntityFrameworkCore.xml",
+        "lib/net9.0/OpenIddict.EntityFrameworkCore.dll",
+        "lib/net9.0/OpenIddict.EntityFrameworkCore.xml",
+        "lib/netstandard2.0/OpenIddict.EntityFrameworkCore.dll",
+        "lib/netstandard2.0/OpenIddict.EntityFrameworkCore.xml",
+        "lib/netstandard2.1/OpenIddict.EntityFrameworkCore.dll",
+        "lib/netstandard2.1/OpenIddict.EntityFrameworkCore.xml",
+        "openiddict.entityframeworkcore.7.2.0.nupkg.sha512",
+        "openiddict.entityframeworkcore.nuspec"
+      ]
+    },
+    "OpenIddict.EntityFrameworkCore.Models/7.2.0": {
+      "sha512": "zZ/0T2fIHV2Yr0YjOj7VKDDUQ0NTlSNTkoSoBEph1Pb26wPolf/fsdCEbdxxXKvuBAmnwMiO5ivIe1Y8Cz8SPw==",
+      "type": "package",
+      "path": "openiddict.entityframeworkcore.models/7.2.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "lib/net10.0/OpenIddict.EntityFrameworkCore.Models.dll",
+        "lib/net10.0/OpenIddict.EntityFrameworkCore.Models.xml",
+        "lib/net462/OpenIddict.EntityFrameworkCore.Models.dll",
+        "lib/net462/OpenIddict.EntityFrameworkCore.Models.xml",
+        "lib/net472/OpenIddict.EntityFrameworkCore.Models.dll",
+        "lib/net472/OpenIddict.EntityFrameworkCore.Models.xml",
+        "lib/net48/OpenIddict.EntityFrameworkCore.Models.dll",
+        "lib/net48/OpenIddict.EntityFrameworkCore.Models.xml",
+        "lib/net8.0/OpenIddict.EntityFrameworkCore.Models.dll",
+        "lib/net8.0/OpenIddict.EntityFrameworkCore.Models.xml",
+        "lib/net9.0/OpenIddict.EntityFrameworkCore.Models.dll",
+        "lib/net9.0/OpenIddict.EntityFrameworkCore.Models.xml",
+        "lib/netstandard2.0/OpenIddict.EntityFrameworkCore.Models.dll",
+        "lib/netstandard2.0/OpenIddict.EntityFrameworkCore.Models.xml",
+        "lib/netstandard2.1/OpenIddict.EntityFrameworkCore.Models.dll",
+        "lib/netstandard2.1/OpenIddict.EntityFrameworkCore.Models.xml",
+        "openiddict.entityframeworkcore.models.7.2.0.nupkg.sha512",
+        "openiddict.entityframeworkcore.models.nuspec"
       ]
     },
     "OpenIddict.Server/7.2.0": {
@@ -4529,6 +4701,21 @@
         "system.windows.extensions.nuspec",
         "useSharedDesignerContext.txt"
       ]
+    },
+    "Sentinel.Application/1.0.0": {
+      "type": "project",
+      "path": "Sentinel.Application/Sentinel.Application.csproj",
+      "msbuildProject": "Sentinel.Application/Sentinel.Application.csproj"
+    },
+    "Sentinel.Domain/1.0.0": {
+      "type": "project",
+      "path": "Sentinel.Domain/Sentinel.Domain.csproj",
+      "msbuildProject": "Sentinel.Domain/Sentinel.Domain.csproj"
+    },
+    "Sentinel.Infrastructure/1.0.0": {
+      "type": "project",
+      "path": "Sentinel.Infrastructure/Sentinel.Infrastructure.csproj",
+      "msbuildProject": "Sentinel.Infrastructure/Sentinel.Infrastructure.csproj"
     }
   },
   "projectFileDependencyGroups": {
@@ -4536,8 +4723,11 @@
       "Microsoft.AspNetCore.Authentication.JwtBearer >= 10.0.0",
       "Microsoft.EntityFrameworkCore >= 10.0.0",
       "Microsoft.EntityFrameworkCore.Design >= 10.0.0",
+      "Microsoft.Extensions.Configuration.EnvironmentVariables >= 10.0.0",
       "Npgsql.EntityFrameworkCore.PostgreSQL >= 10.0.0",
       "OpenIddict >= 7.2.0",
+      "Sentinel.Application >= 1.0.0",
+      "Sentinel.Infrastructure >= 1.0.0",
       "StackExchange.Redis >= 2.10.1"
     ]
   },
@@ -4565,7 +4755,14 @@
       "frameworks": {
         "net10.0": {
           "targetAlias": "net10.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "D:\\Code\\Sentinel\\Sentinel.Application\\Sentinel.Application.csproj": {
+              "projectPath": "D:\\Code\\Sentinel\\Sentinel.Application\\Sentinel.Application.csproj"
+            },
+            "D:\\Code\\Sentinel\\Sentinel.Infrastructure\\Sentinel.Infrastructure.csproj": {
+              "projectPath": "D:\\Code\\Sentinel\\Sentinel.Infrastructure\\Sentinel.Infrastructure.csproj"
+            }
+          }
         }
       },
       "warningProperties": {
@@ -4595,6 +4792,10 @@
           "Microsoft.EntityFrameworkCore.Design": {
             "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
             "suppressParent": "All",
+            "target": "Package",
+            "version": "[10.0.0, )"
+          },
+          "Microsoft.Extensions.Configuration.EnvironmentVariables": {
             "target": "Package",
             "version": "[10.0.0, )"
           },
@@ -5047,5 +5248,17 @@
         }
       }
     }
-  }
+  },
+  "logs": [
+    {
+      "code": "NU1510",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "PackageReference Microsoft.Extensions.Configuration.EnvironmentVariables will not be pruned. Consider removing this package from your dependencies, as it is likely unnecessary.",
+      "libraryId": "Microsoft.Extensions.Configuration.EnvironmentVariables",
+      "targetGraphs": [
+        "net10.0"
+      ]
+    }
+  ]
 }

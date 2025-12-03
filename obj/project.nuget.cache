@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "CZMCD67J7CI=",
+  "dgSpecHash": "RrkD0kf5t3Y=",
   "success": true,
   "projectFilePath": "D:\\Code\\Sentinel\\Sentinel.csproj",
   "expectedPackageFiles": [
@@ -23,6 +23,7 @@
     "C:\\Users\\muaz_\\.nuget\\packages\\microsoft.entityframeworkcore.relational\\10.0.0\\microsoft.entityframeworkcore.relational.10.0.0.nupkg.sha512",
     "C:\\Users\\muaz_\\.nuget\\packages\\microsoft.extensions.ambientmetadata.application\\10.0.0\\microsoft.extensions.ambientmetadata.application.10.0.0.nupkg.sha512",
     "C:\\Users\\muaz_\\.nuget\\packages\\microsoft.extensions.compliance.abstractions\\10.0.0\\microsoft.extensions.compliance.abstractions.10.0.0.nupkg.sha512",
+    "C:\\Users\\muaz_\\.nuget\\packages\\microsoft.extensions.configuration.environmentvariables\\10.0.0\\microsoft.extensions.configuration.environmentvariables.10.0.0.nupkg.sha512",
     "C:\\Users\\muaz_\\.nuget\\packages\\microsoft.extensions.dependencyinjection.autoactivation\\10.0.0\\microsoft.extensions.dependencyinjection.autoactivation.10.0.0.nupkg.sha512",
     "C:\\Users\\muaz_\\.nuget\\packages\\microsoft.extensions.dependencymodel\\10.0.0\\microsoft.extensions.dependencymodel.10.0.0.nupkg.sha512",
     "C:\\Users\\muaz_\\.nuget\\packages\\microsoft.extensions.diagnostics.exceptionsummarization\\10.0.0\\microsoft.extensions.diagnostics.exceptionsummarization.10.0.0.nupkg.sha512",
@@ -50,6 +51,8 @@
     "C:\\Users\\muaz_\\.nuget\\packages\\openiddict.client.systemnethttp\\7.2.0\\openiddict.client.systemnethttp.7.2.0.nupkg.sha512",
     "C:\\Users\\muaz_\\.nuget\\packages\\openiddict.client.webintegration\\7.2.0\\openiddict.client.webintegration.7.2.0.nupkg.sha512",
     "C:\\Users\\muaz_\\.nuget\\packages\\openiddict.core\\7.2.0\\openiddict.core.7.2.0.nupkg.sha512",
+    "C:\\Users\\muaz_\\.nuget\\packages\\openiddict.entityframeworkcore\\7.2.0\\openiddict.entityframeworkcore.7.2.0.nupkg.sha512",
+    "C:\\Users\\muaz_\\.nuget\\packages\\openiddict.entityframeworkcore.models\\7.2.0\\openiddict.entityframeworkcore.models.7.2.0.nupkg.sha512",
     "C:\\Users\\muaz_\\.nuget\\packages\\openiddict.server\\7.2.0\\openiddict.server.7.2.0.nupkg.sha512",
     "C:\\Users\\muaz_\\.nuget\\packages\\openiddict.validation\\7.2.0\\openiddict.validation.7.2.0.nupkg.sha512",
     "C:\\Users\\muaz_\\.nuget\\packages\\openiddict.validation.serverintegration\\7.2.0\\openiddict.validation.serverintegration.7.2.0.nupkg.sha512",
@@ -79,5 +82,18 @@
     "C:\\Users\\muaz_\\.nuget\\packages\\system.security.permissions\\9.0.0\\system.security.permissions.9.0.0.nupkg.sha512",
     "C:\\Users\\muaz_\\.nuget\\packages\\system.windows.extensions\\9.0.0\\system.windows.extensions.9.0.0.nupkg.sha512"
   ],
-  "logs": []
+  "logs": [
+    {
+      "code": "NU1510",
+      "level": "Warning",
+      "message": "PackageReference Microsoft.Extensions.Configuration.EnvironmentVariables will not be pruned. Consider removing this package from your dependencies, as it is likely unnecessary.",
+      "projectPath": "D:\\Code\\Sentinel\\Sentinel.csproj",
+      "warningLevel": 1,
+      "filePath": "D:\\Code\\Sentinel\\Sentinel.csproj",
+      "libraryId": "Microsoft.Extensions.Configuration.EnvironmentVariables",
+      "targetGraphs": [
+        "net10.0"
+      ]
+    }
+  ]
 }
