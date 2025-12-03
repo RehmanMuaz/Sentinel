@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="Sentinel.Application/Sentinel.Application.csproj" />
+  <Project Path="Sentinel.Domain/Sentinel.Domain.csproj" />
+  <Project Path="Sentinel.Infrastructure/Sentinel.Infrastructure.csproj" />
+</Solution>

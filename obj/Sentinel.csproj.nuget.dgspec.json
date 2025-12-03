@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Code\\Sentinel\\Sentinel\\Sentinel.csproj": {}
+    "D:\\Code\\Sentinel\\Sentinel.csproj": {}
   },
   "projects": {
-    "D:\\Code\\Sentinel\\Sentinel\\Sentinel.csproj": {
+    "D:\\Code\\Sentinel\\Sentinel.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Code\\Sentinel\\Sentinel\\Sentinel.csproj",
+        "projectUniqueName": "D:\\Code\\Sentinel\\Sentinel.csproj",
         "projectName": "Sentinel",
-        "projectPath": "D:\\Code\\Sentinel\\Sentinel\\Sentinel.csproj",
+        "projectPath": "D:\\Code\\Sentinel\\Sentinel.csproj",
         "packagesPath": "C:\\Users\\muaz_\\.nuget\\packages\\",
-        "outputPath": "D:\\Code\\Sentinel\\Sentinel\\obj\\",
+        "outputPath": "D:\\Code\\Sentinel\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\muaz_\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -43,6 +43,34 @@
       "frameworks": {
         "net10.0": {
           "targetAlias": "net10.0",
+          "dependencies": {
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[10.0.0, )"
+            },
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[10.0.0, )"
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[10.0.0, )"
+            },
+            "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[10.0.0, )"
+            },
+            "OpenIddict": {
+              "target": "Package",
+              "version": "[7.2.0, )"
+            },
+            "StackExchange.Redis": {
+              "target": "Package",
+              "version": "[2.10.1, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",
