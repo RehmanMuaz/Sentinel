@@ -19,7 +19,7 @@ services:
   redis:
     image: redis:7
     container_name: sentinel-redis
-    command: ["redis-server", "==appendonly", "yes"]
+    command: ["redis-server", "--appendonly", "yes"]
     ports:
       - "6379:6379"
     volumes:
