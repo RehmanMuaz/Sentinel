@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using System.Text.Json;
 using OpenIddict.Abstractions;
 using OpenIddict.EntityFrameworkCore;
 using OpenIddict.Validation.AspNetCore;
@@ -42,6 +44,7 @@ builder.Services.AddAuthentication(options =>
 });
 builder.Services.AddAuthorization();
 builder.Services.AddControllers();
+builder.Services.AddSingleton<HealthCheckResponseFormatter>();
 
 builder.Services.AddOpenIddict()
     .AddCore(options =>
@@ -148,6 +151,10 @@ app.MapGet("/connect/userinfo", (HttpContext ctx) =>
     });
 }).RequireAuthorization();
 
-app.MapHealthChecks("/health");
+var formatter = app.Services.GetRequiredService<HealthCheckResponseFormatter>();
+app.MapHealthChecks("/health", new HealthCheckOptions
+{
+    ResponseWriter = formatter.WriteResponse
+});
 
 app.Run();
