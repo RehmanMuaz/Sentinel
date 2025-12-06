@@ -43,7 +43,11 @@ builder.Services.AddAuthentication(options =>
     options.DefaultAuthenticateScheme = OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
 });
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("ManageClients", policy =>
+        policy.RequireClaim("scope", "manage:clients", "api"));
+});
 builder.Services.AddControllers();
 builder.Services.AddSingleton<ISecretHasher, Pbkdf2SecretHasher>();
 builder.Services.AddSingleton<HealthCheckResponseFormatter>();
@@ -103,7 +107,7 @@ builder.Services.AddOpenIddict()
 
         options.DisableAccessTokenEncryption();
 
-        options.RegisterScopes("api");
+        options.RegisterScopes("api", "manage:clients");
     })
     .AddValidation(options =>
     {

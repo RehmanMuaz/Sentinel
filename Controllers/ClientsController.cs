@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Sentinel.Domain.Entities;
@@ -7,6 +8,7 @@ using Sentinel.Infrastructure.Security;
 
 namespace Sentinel.Api.Controllers;
 
+[Authorize(Policy = "ManageClients")]
 [ApiController]
 [Route("api/clients")]
 public class ClientsController : ControllerBase
