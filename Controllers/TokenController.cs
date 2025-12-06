@@ -5,6 +5,7 @@ using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
 using Sentinel.Domain.Entities;
 using Sentinel.Infrastructure;
+using Sentinel.Infrastructure.Security;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace Sentinel.Api.Controllers;
@@ -13,10 +14,12 @@ namespace Sentinel.Api.Controllers;
 public class TokenController : ControllerBase
 {
     private readonly SentinelDbContext _db;
+    private readonly ISecretHasher _secretHasher;
 
-    public TokenController(SentinelDbContext db)
+    public TokenController(SentinelDbContext db, ISecretHasher secretHasher)
     {
         _db = db;
+        _secretHasher = secretHasher;
     }
 
     [HttpPost("~/connect/token")]
@@ -47,8 +50,7 @@ public class TokenController : ControllerBase
                 return Forbid(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
             }
 
-            // TODO: replace with proper secret hashing/verification.
-            if (!string.Equals(clientSecret, client.ClientSecretHash, StringComparison.Ordinal))
+            if (!_secretHasher.Verify(clientSecret, client.ClientSecretHash))
             {
                 return Forbid(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
             }

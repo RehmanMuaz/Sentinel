@@ -14,6 +14,7 @@ using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 using System.IO;
 using static OpenIddict.Abstractions.OpenIddictConstants;
+using Sentinel.Infrastructure.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,6 +45,7 @@ builder.Services.AddAuthentication(options =>
 });
 builder.Services.AddAuthorization();
 builder.Services.AddControllers();
+builder.Services.AddSingleton<ISecretHasher, Pbkdf2SecretHasher>();
 builder.Services.AddSingleton<HealthCheckResponseFormatter>();
 
 builder.Services.AddOpenIddict()
