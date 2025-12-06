@@ -1,5 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using OpenIddict.EntityFrameworkCore;
+using Sentinel.Domain.Entities;
 
 namespace Sentinel.Infrastructure;
 
@@ -10,12 +11,16 @@ public class SentinelDbContext : DbContext
     {
     }
 
+    public DbSet<Tenant> Tenants => Set<Tenant>();
+    public DbSet<Client> Clients => Set<Client>();
+    public DbSet<Scope> Scopes => Set<Scope>();
+    public DbSet<User> Users => Set<User>();
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
 
         builder.UseOpenIddict();
-
-        // TODO: Add entity configurations here (Users, Tenants, etc.)
+        builder.ApplyConfigurationsFromAssembly(typeof(SentinelDbContext).Assembly);
     }
 }
