@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using OpenIddict.Abstractions;
 using OpenIddict.EntityFrameworkCore;
 using OpenIddict.Validation.AspNetCore;
 using OpenIddict.Server;
@@ -8,6 +9,9 @@ using Sentinel.Infrastructure;
 using StackExchange.Redis;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography.X509Certificates;
+using System.IO;
+using static OpenIddict.Abstractions.OpenIddictConstants;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,6 +41,7 @@ builder.Services.AddAuthentication(options =>
     options.DefaultChallengeScheme = OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
 });
 builder.Services.AddAuthorization();
+builder.Services.AddControllers();
 
 builder.Services.AddOpenIddict()
     .AddCore(options =>
@@ -56,16 +61,36 @@ builder.Services.AddOpenIddict()
             .AllowRefreshTokenFlow()
             .AllowClientCredentialsFlow();
 
-        options
-            .AddDevelopmentEncryptionCertificate()
-            .AddDevelopmentSigningCertificate(); // Dev env only
+        var signingCertPath = builder.Configuration["Auth:SigningCertificate:Path"];
+        var signingCertPassword = builder.Configuration["Auth:SigningCertificate:Password"];
+        var encryptionCertPath = builder.Configuration["Auth:EncryptionCertificate:Path"];
+        var encryptionCertPassword = builder.Configuration["Auth:EncryptionCertificate:Password"];
+
+        if (!string.IsNullOrWhiteSpace(signingCertPath) && File.Exists(signingCertPath))
+        {
+            options.AddSigningCertificate(new X509Certificate2(signingCertPath, signingCertPassword, X509KeyStorageFlags.MachineKeySet));
+        }
+        else
+        {
+            options.AddEphemeralSigningKey(); // fallback for dev
+        }
+
+        if (!string.IsNullOrWhiteSpace(encryptionCertPath) && File.Exists(encryptionCertPath))
+        {
+            options.AddEncryptionCertificate(new X509Certificate2(encryptionCertPath, encryptionCertPassword, X509KeyStorageFlags.MachineKeySet));
+        }
+        else
+        {
+            options.AddEphemeralEncryptionKey(); // fallback for dev
+        }
 
         options.UseAspNetCore()
-            .EnableAuthorizationEndpointPassthrough()
-            .EnableTokenEndpointPassthrough()
-            .EnableStatusCodePagesIntegration();
+            .EnableStatusCodePagesIntegration()
+            .EnableTokenEndpointPassthrough();
 
         options.DisableAccessTokenEncryption();
+
+        options.RegisterScopes("api");
     })
     .AddValidation(options =>
     {
@@ -75,15 +100,21 @@ builder.Services.AddOpenIddict()
 );
 
 
+builder.Services.AddControllers();
+
 var app = builder.Build();
 
 app.UseHttpsRedirection();
+app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapControllers(); // exposes OpenIddict endpoints like /connect/token
+
+// Public liveness test
 app.MapGet("/", () => "Hello World!");
 
-// Basic userinfo endpoint: returns claims for the authenticated user.
+// Returns claims for the authenticated user.
 app.MapGet("/connect/userinfo", (HttpContext ctx) =>
 {
     var user = ctx.User;
@@ -94,19 +125,6 @@ app.MapGet("/connect/userinfo", (HttpContext ctx) =>
         email = user.FindFirst("email")?.Value,
         scopes = user.FindAll("scope").Select(c => c.Value).ToArray()
     });
-}).RequireAuthorization();
-
-app.MapGet("/me", (HttpContext ctx) =>
-{
-    var user = ctx.User;
-    return Results.Json(new
-    {
-       subject = user.FindFirst("sub")?.Value ?? user.Identity?.Name,
-       name = user.FindFirst("name")?.Value,
-       email = user.FindFirst("email")?.Value,
-       scopes = user.FindAll("scope").Select(c => c.Value).ToArray() 
-    });
-    
 }).RequireAuthorization();
 
 app.Run();
