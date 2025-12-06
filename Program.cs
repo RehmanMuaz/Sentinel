@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using OpenIddict.Abstractions;
 using OpenIddict.EntityFrameworkCore;
 using OpenIddict.Validation.AspNetCore;
@@ -68,7 +68,11 @@ builder.Services.AddOpenIddict()
 
         if (!string.IsNullOrWhiteSpace(signingCertPath) && File.Exists(signingCertPath))
         {
-            options.AddSigningCertificate(new X509Certificate2(signingCertPath, signingCertPassword, X509KeyStorageFlags.MachineKeySet));
+            var signingCert = X509CertificateLoader.LoadPkcs12(
+                File.ReadAllBytes(signingCertPath),
+                signingCertPassword ?? string.Empty,
+                X509KeyStorageFlags.MachineKeySet);
+            options.AddSigningCertificate(signingCert);
         }
         else
         {
@@ -77,7 +81,11 @@ builder.Services.AddOpenIddict()
 
         if (!string.IsNullOrWhiteSpace(encryptionCertPath) && File.Exists(encryptionCertPath))
         {
-            options.AddEncryptionCertificate(new X509Certificate2(encryptionCertPath, encryptionCertPassword, X509KeyStorageFlags.MachineKeySet));
+            var encryptionCert = X509CertificateLoader.LoadPkcs12(
+                File.ReadAllBytes(encryptionCertPath),
+                encryptionCertPassword ?? string.Empty,
+                X509KeyStorageFlags.MachineKeySet);
+            options.AddEncryptionCertificate(encryptionCert);
         }
         else
         {
@@ -99,8 +107,21 @@ builder.Services.AddOpenIddict()
     }
 );
 
+var defaultDb = builder.Configuration.GetConnectionString("Default");
+var redisConn = builder.Configuration.GetConnectionString("Redis") ?? builder.Configuration["Redis:ConnectionString"] ?? "localhost:6379";
 
-builder.Services.AddControllers();
+var healthChecks = builder.Services.AddHealthChecks()
+    .AddCheck("self", () => HealthCheckResult.Healthy());
+
+if (!string.IsNullOrWhiteSpace(defaultDb))
+{
+    healthChecks.AddNpgSql(defaultDb, name: "postgres");
+}
+
+if (!string.IsNullOrWhiteSpace(redisConn))
+{
+    healthChecks.AddRedis(redisConn, name: "redis");
+}
 
 var app = builder.Build();
 
@@ -126,5 +147,7 @@ app.MapGet("/connect/userinfo", (HttpContext ctx) =>
         scopes = user.FindAll("scope").Select(c => c.Value).ToArray()
     });
 }).RequireAuthorization();
+
+app.MapHealthChecks("/health");
 
 app.Run();

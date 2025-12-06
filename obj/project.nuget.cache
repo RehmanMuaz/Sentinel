@@ -1,9 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "Lc7+KXh3zXE=",
+  "dgSpecHash": "e6igrQnqFJM=",
   "success": true,
   "projectFilePath": "D:\\Code\\Sentinel\\Sentinel.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\muaz_\\.nuget\\packages\\aspnetcore.healthchecks.npgsql\\9.0.0\\aspnetcore.healthchecks.npgsql.9.0.0.nupkg.sha512",
+    "C:\\Users\\muaz_\\.nuget\\packages\\aspnetcore.healthchecks.redis\\9.0.0\\aspnetcore.healthchecks.redis.9.0.0.nupkg.sha512",
     "C:\\Users\\muaz_\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\muaz_\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\10.0.0\\microsoft.aspnetcore.authentication.jwtbearer.10.0.0.nupkg.sha512",
     "C:\\Users\\muaz_\\.nuget\\packages\\microsoft.build\\17.7.2\\microsoft.build.17.7.2.nupkg.sha512",
