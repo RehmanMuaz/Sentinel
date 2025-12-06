@@ -28,12 +28,17 @@ public class ClientConfiguration : IEntityTypeConfiguration<Client>
             l => l.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
             l => l.ToList());
 
-        builder.Property("_redirectUris")
-               .HasConversion(listToJsonConverter)
-               .Metadata.SetValueComparer(listComparer);
-        builder.Property("_allowedScopes")
-               .HasConversion(listToJsonConverter)
-               .Metadata.SetValueComparer(listComparer);
+        var redirectProperty = builder.Property<List<string>>("_redirectUris");
+        redirectProperty.HasConversion(listToJsonConverter);
+        redirectProperty.HasColumnName("_redirectUris");
+        redirectProperty.Metadata.SetValueComparer(listComparer);
+        redirectProperty.Metadata.SetPropertyAccessMode(PropertyAccessMode.Field);
+
+        var scopesProperty = builder.Property<List<string>>("_allowedScopes");
+        scopesProperty.HasConversion(listToJsonConverter);
+        scopesProperty.HasColumnName("_allowedScopes");
+        scopesProperty.Metadata.SetValueComparer(listComparer);
+        scopesProperty.Metadata.SetPropertyAccessMode(PropertyAccessMode.Field);
 
         builder.HasIndex(c => new { c.TenantId, c.ClientId }).IsUnique();
     }
