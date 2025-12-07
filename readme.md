@@ -1,5 +1,7 @@
 # Sentinel
 
+ *If you’re tired of copy-pasting login code into every new project, Sentinel is meant to be the one place that handles it all.*
+
 Sentinel is a **modular, reusable authentication and authorization microservice** built with **ASP.NET Core**.  
 It’s designed to act as a **central OAuth2 / OpenID Connect provider** that you can plug into multiple apps and services (portfolios, internal tools, SaaS products, etc.) without rewriting auth every time.
 
@@ -66,5 +68,3 @@ This structure keeps the auth logic **isolated, testable, and reusable** across 
   - Web apps (Next.js, React, etc.)
   - Mobile apps
   - Internal tools & admin dashboards
-
-If you’re tired of copy-pasting login code into every new project, Sentinel is meant to be the one place that handles it all.

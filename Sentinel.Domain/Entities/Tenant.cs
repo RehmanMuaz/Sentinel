@@ -30,4 +30,15 @@ public class Tenant
         var value = slug.Trim().ToLowerInvariant();
         return value.Replace(' ', '-');
     }
+
+    public void Update(string name, string slug)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Tenant name is required.", nameof(name));
+        if (string.IsNullOrWhiteSpace(slug))
+            throw new ArgumentException("Tenant slug is required.", nameof(slug));
+
+        Name = name.Trim();
+        Slug = NormalizeSlug(slug);
+    }
 }
