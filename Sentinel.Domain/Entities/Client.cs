@@ -51,6 +51,35 @@ public class Client
         if (string.IsNullOrWhiteSpace(scope)) throw new ArgumentException("Scope is required.", nameof(scope));
         if (!_allowedScopes.Contains(scope)) _allowedScopes.Add(scope);
     }
+
+    public void UpdateName(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("Name is required.", nameof(name));
+        Name = name.Trim();
+    }
+
+    public void SetType(ClientType type)
+    {
+        Type = type;
+    }
+
+    public void ReplaceRedirectUris(IEnumerable<string> uris)
+    {
+        _redirectUris.Clear();
+        foreach (var uri in uris ?? Array.Empty<string>())
+        {
+            AddRedirectUri(uri);
+        }
+    }
+
+    public void ReplaceAllowedScopes(IEnumerable<string> scopes)
+    {
+        _allowedScopes.Clear();
+        foreach (var scope in scopes ?? Array.Empty<string>())
+        {
+            AddScope(scope);
+        }
+    }
 }
 public enum ClientType
 {

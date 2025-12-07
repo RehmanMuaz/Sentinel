@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Sentinel.Domain.Entities;
 using Sentinel.Infrastructure;
 using Sentinel.Infrastructure.Security;
+using OpenIddict.Abstractions;
+using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace Sentinel.Api.Controllers;
 
@@ -15,11 +17,13 @@ public class ClientsController : ControllerBase
 {
     private readonly SentinelDbContext _db;
     private readonly ISecretHasher _secretHasher;
+    private readonly IOpenIddictApplicationManager _appManager;
 
-    public ClientsController(SentinelDbContext db, ISecretHasher secretHasher)
+    public ClientsController(SentinelDbContext db, ISecretHasher secretHasher, IOpenIddictApplicationManager appManager)
     {
         _db = db;
         _secretHasher = secretHasher;
+        _appManager = appManager;
     }
 
     [HttpGet]
@@ -96,6 +100,10 @@ public class ClientsController : ControllerBase
         _db.Clients.Add(client);
         await _db.SaveChangesAsync();
 
+        // Also register with OpenIddict
+        var descriptor = BuildDescriptor(request, client.Name);
+        await _appManager.CreateAsync(descriptor);
+
         var response = new ClientResponse
         {
             Id = client.Id,
@@ -109,6 +117,144 @@ public class ClientsController : ControllerBase
         };
 
         return CreatedAtAction(nameof(GetAll), new { id = client.Id }, response);
+    }
+
+    [HttpPut("{id:guid}")]
+    public async Task<ActionResult<ClientResponse>> Update(Guid id, [FromBody] CreateClientRequest request)
+    {
+        if (!ModelState.IsValid)
+        {
+            return ValidationProblem(ModelState);
+        }
+
+        var client = await _db.Clients.FirstOrDefaultAsync(c => c.Id == id);
+        if (client is null) return NotFound();
+
+        if (!Enum.TryParse<ClientType>(request.Type, true, out var clientType))
+        {
+            return BadRequest("Invalid client type. Use Confidential or Public.");
+        }
+
+        client.UpdateName(request.Name);
+        client.SetType(clientType);
+        client.ReplaceRedirectUris(request.RedirectUris ?? Array.Empty<string>());
+        client.ReplaceAllowedScopes(request.AllowedScopes ?? Array.Empty<string>());
+
+        if (clientType == ClientType.Confidential)
+        {
+            if (string.IsNullOrWhiteSpace(request.ClientSecret))
+            {
+                return BadRequest("Client secret is required for confidential clients.");
+            }
+            client.SetSecretHash(_secretHasher.Hash(request.ClientSecret));
+        }
+        else
+        {
+            client.SetSecretHash(null);
+        }
+
+        await _db.SaveChangesAsync();
+
+        // Update OpenIddict application if it exists
+        var app = await _appManager.FindByClientIdAsync(client.ClientId);
+        var descriptor = BuildDescriptor(request, client.Name);
+        if (app is null)
+        {
+            await _appManager.CreateAsync(descriptor);
+        }
+        else
+        {
+            await _appManager.UpdateAsync(app, descriptor);
+        }
+
+        var response = new ClientResponse
+        {
+            Id = client.Id,
+            TenantId = client.TenantId,
+            ClientId = client.ClientId,
+            Name = client.Name,
+            Type = client.Type.ToString(),
+            AllowedScopes = client.AllowedScopes.ToArray(),
+            RedirectUris = client.RedirectUris.ToArray(),
+            CreatedAt = client.CreatedAt
+        };
+
+        return Ok(response);
+    }
+
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        var client = await _db.Clients.FirstOrDefaultAsync(c => c.Id == id);
+        if (client is null) return NotFound();
+
+        _db.Clients.Remove(client);
+        await _db.SaveChangesAsync();
+
+        var app = await _appManager.FindByClientIdAsync(client.ClientId);
+        if (app is not null)
+        {
+            await _appManager.DeleteAsync(app);
+        }
+
+        return NoContent();
+    }
+
+    private OpenIddictApplicationDescriptor BuildDescriptor(CreateClientRequest request, string displayName)
+    {
+        var descriptor = new OpenIddictApplicationDescriptor
+        {
+            ClientId = request.ClientId,
+            DisplayName = displayName,
+            ClientType = string.Equals(request.Type, "Public", StringComparison.OrdinalIgnoreCase)
+                ? ClientTypes.Public
+                : ClientTypes.Confidential
+        };
+
+        if (!string.Equals(request.Type, "Public", StringComparison.OrdinalIgnoreCase))
+        {
+            descriptor.ClientSecret = request.ClientSecret;
+        }
+
+        if (request.RedirectUris?.Any() == true)
+        {
+            foreach (var uri in request.RedirectUris.Where(u => !string.IsNullOrWhiteSpace(u)))
+            {
+                descriptor.RedirectUris.Add(new Uri(uri));
+            }
+        }
+
+        var scopes = request.AllowedScopes ?? Array.Empty<string>();
+        descriptor.Permissions.Clear();
+        descriptor.Permissions.UnionWith(new[]
+        {
+            Permissions.Endpoints.Authorization,
+            Permissions.Endpoints.Token,
+            Permissions.Endpoints.Revocation,
+            Permissions.Endpoints.Introspection,
+            Permissions.GrantTypes.AuthorizationCode,
+            Permissions.GrantTypes.RefreshToken,
+            Permissions.ResponseTypes.Code,
+            Permissions.Prefixes.Scope + Scopes.OpenId
+        });
+
+        if (!string.Equals(request.Type, "Public", StringComparison.OrdinalIgnoreCase))
+        {
+            descriptor.Permissions.Add(Permissions.GrantTypes.ClientCredentials);
+        }
+
+        foreach (var scope in scopes.Where(s => !string.IsNullOrWhiteSpace(s)))
+        {
+            descriptor.Permissions.Add(Permissions.Prefixes.Scope + scope);
+        }
+
+        descriptor.Requirements.Clear();
+        if (string.Equals(request.Type, "Public", StringComparison.OrdinalIgnoreCase))
+        {
+            descriptor.Requirements.Add(Requirements.Features.ProofKeyForCodeExchange);
+        }
+
+        return descriptor;
     }
 }
 
