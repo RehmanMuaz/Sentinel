@@ -1,0 +1,40 @@
+@page "/t/{slug}/account/register"
+@model RegisterModel
+@{
+    Layout = null;
+}
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Register</title>
+</head>
+<body>
+    <h1>Create account for @Model.Slug</h1>
+    <form method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="returnUrl" value="@Model.ReturnUrl" />
+        <div>
+            <label>Email</label>
+            <input name="email" type="email" required />
+        </div>
+        <div>
+            <label>Password</label>
+            <input name="password" type="password" required />
+        </div>
+        <div>
+            <label>Confirm password</label>
+            <input name="confirmPassword" type="password" required />
+        </div>
+        <button type="submit">Create account</button>
+    </form>
+    @if (!string.IsNullOrEmpty(Model.Error))
+    {
+        <div style="color:red">@Model.Error</div>
+    }
+    @if (!string.IsNullOrEmpty(Model.Success))
+    {
+        <div style="color:green">@Model.Success</div>
+    }
+</body>
+</html>

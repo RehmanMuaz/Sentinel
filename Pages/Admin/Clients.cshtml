@@ -1,0 +1,121 @@
+@page "/admin/clients"
+@model ClientsPageModel
+@{
+    Layout = null;
+}
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Clients</title>
+</head>
+<body>
+    <h1>OpenIddict Clients</h1>
+
+    <h2>Create client</h2>
+    <form method="post">
+        @Html.AntiForgeryToken()
+        <div>
+            <label>Client ID</label>
+            <input name="ClientId" value="@Model.ClientId" required />
+        </div>
+        <div>
+            <label>Display name</label>
+            <input name="DisplayName" value="@Model.DisplayName" required />
+        </div>
+        <div>
+            <label><input type="checkbox" name="IsPublic" value="true" @(Model.IsPublic ? "checked" : "") /> Public (no client secret, use PKCE)</label>
+        </div>
+        <div>
+            <label>Client secret (for confidential)</label>
+            <input name="ClientSecret" value="@Model.ClientSecret" />
+        </div>
+        <div>
+            <label><input type="checkbox" name="AllowClientCredentials" value="true" @(Model.AllowClientCredentials ? "checked" : "") /> Allow client credentials</label>
+        </div>
+        <div>
+            <label><input type="checkbox" name="RequirePkce" value="true" @(Model.RequirePkce ? "checked" : "") /> Require PKCE (public clients)</label>
+        </div>
+        <div>
+            <label>Redirect URIs (one per line)</label><br />
+            <textarea name="RedirectUris" rows="3" cols="60">@Model.RedirectUris</textarea>
+        </div>
+        <div>
+            <label>Allowed scopes (comma or space separated)</label>
+            <input name="AllowedScopes" value="@Model.AllowedScopes" />
+        </div>
+        <button type="submit">Create</button>
+    </form>
+
+    <h2>Update client</h2>
+    <form method="post" asp-page-handler="Update">
+        @Html.AntiForgeryToken()
+        <div>
+            <label>Client ID</label>
+            <input name="ClientId" value="@Model.ClientId" required />
+        </div>
+        <div>
+            <label>Display name</label>
+            <input name="DisplayName" value="@Model.DisplayName" required />
+        </div>
+        <div>
+            <label><input type="checkbox" name="IsPublic" value="true" @(Model.IsPublic ? "checked" : "") /> Public (no client secret, use PKCE)</label>
+        </div>
+        <div>
+            <label>Client secret (for confidential)</label>
+            <input name="ClientSecret" value="@Model.ClientSecret" />
+        </div>
+        <div>
+            <label><input type="checkbox" name="AllowClientCredentials" value="true" @(Model.AllowClientCredentials ? "checked" : "") /> Allow client credentials</label>
+        </div>
+        <div>
+            <label><input type="checkbox" name="RequirePkce" value="true" @(Model.RequirePkce ? "checked" : "") /> Require PKCE (public clients)</label>
+        </div>
+        <div>
+            <label>Redirect URIs (one per line)</label><br />
+            <textarea name="RedirectUris" rows="3" cols="60">@Model.RedirectUris</textarea>
+        </div>
+        <div>
+            <label>Allowed scopes (comma or space separated)</label>
+            <input name="AllowedScopes" value="@Model.AllowedScopes" />
+        </div>
+        <button type="submit">Update</button>
+    </form>
+
+    @if (!string.IsNullOrEmpty(Model.Error))
+    {
+        <div style="color:red">@Model.Error</div>
+    }
+    @if (!string.IsNullOrEmpty(Model.Success))
+    {
+        <div style="color:green">@Model.Success</div>
+    }
+
+    <h2>Existing clients</h2>
+    <table border="1" cellpadding="4">
+        <tr>
+            <th>ClientId</th>
+            <th>Display</th>
+            <th>Type</th>
+            <th>Permissions</th>
+            <th>Actions</th>
+        </tr>
+        @foreach (var c in Model.Clients)
+        {
+            <tr>
+                <td>@c.ClientId</td>
+                <td>@c.DisplayName</td>
+                <td>@c.ClientType</td>
+                <td>@string.Join(", ", c.Permissions)</td>
+                <td>
+                    <form method="post" asp-page-handler="Delete">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="ClientId" value="@c.ClientId" />
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </table>
+</body>
+</html>

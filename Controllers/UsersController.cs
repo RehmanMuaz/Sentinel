@@ -49,7 +49,7 @@ public class UsersController : ControllerBase
         var exists = await _db.Users.AsNoTracking().AnyAsync(u => u.TenantId == request.TenantId && u.Email == email);
         if (exists) return Conflict("A user with this email already exists for the tenant.");
 
-        var user = User.Create(request.TenantId, email, _hasher.Hash(request.Password));
+        var user = Sentinel.Domain.Entities.User.Create(request.TenantId, email, _hasher.Hash(request.Password));
         if (!request.IsActive) user.Deactivate();
 
         _db.Users.Add(user);
