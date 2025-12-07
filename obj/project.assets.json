@@ -34,6 +34,18 @@
           }
         }
       },
+      "HTTPRequest/2.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Newtonsoft.Json": "13.0.1"
+        },
+        "compile": {
+          "lib/netstandard2.0/HTTPRequest.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/HTTPRequest.dll": {}
+        }
+      },
       "Humanizer.Core/2.14.1": {
         "type": "package",
         "compile": {
@@ -1137,7 +1149,7 @@
       "Newtonsoft.Json/13.0.3": {
         "type": "package",
         "compile": {
-          "lib/net6.0/_._": {
+          "lib/net6.0/Newtonsoft.Json.dll": {
             "related": ".xml"
           }
         },
@@ -2016,6 +2028,19 @@
         "lib/net8.0/HealthChecks.Redis.xml",
         "lib/netstandard2.0/HealthChecks.Redis.dll",
         "lib/netstandard2.0/HealthChecks.Redis.xml"
+      ]
+    },
+    "HTTPRequest/2.0.0": {
+      "sha512": "J/1MuhPLLv2AhArdAE2T5sJz8elJyK37dbul4/OQ3Y+nl3q5cSPSj6ick1wUdAXMV4Oz9L8rYsNEOPozYcnm0g==",
+      "type": "package",
+      "path": "httprequest/2.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "httprequest.2.0.0.nupkg.sha512",
+        "httprequest.nuspec",
+        "lib/netstandard2.0/HTTPRequest.dll"
       ]
     },
     "Humanizer.Core/2.14.1": {
@@ -5048,6 +5073,7 @@
     "net10.0": [
       "AspNetCore.HealthChecks.NpgSql >= 9.0.0",
       "AspNetCore.HealthChecks.Redis >= 9.0.0",
+      "HttpRequest >= 2.0.0",
       "Microsoft.AspNetCore.Authentication.JwtBearer >= 10.0.0",
       "Microsoft.EntityFrameworkCore >= 10.0.0",
       "Microsoft.EntityFrameworkCore.Design >= 10.0.0",
@@ -5119,6 +5145,10 @@
           "AspNetCore.HealthChecks.Redis": {
             "target": "Package",
             "version": "[9.0.0, )"
+          },
+          "HttpRequest": {
+            "target": "Package",
+            "version": "[2.0.0, )"
           },
           "Microsoft.AspNetCore.Authentication.JwtBearer": {
             "target": "Package",

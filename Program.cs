@@ -58,11 +58,6 @@ builder.Services.AddAuthentication(options =>
     options.Cookie.Name = "sentinel.auth";
     options.Cookie.HttpOnly = true;
     options.Cookie.SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.Always;
-})
-.AddOpenIddictValidation(options =>
-{
-    options.UseLocalServer();
-    options.UseAspNetCore();
 });
 
 builder.Services.AddAuthorization(options =>
@@ -73,6 +68,8 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddControllers();
 builder.Services.AddSingleton<ISecretHasher, Pbkdf2SecretHasher>();
 builder.Services.AddSingleton<HealthCheckResponseFormatter>();
+builder.Services.AddRazorPages();
+builder.Services.AddRazorPages();
 
 builder.Services.AddOpenIddict()
     .AddCore(options =>
@@ -85,8 +82,7 @@ builder.Services.AddOpenIddict()
             .SetAuthorizationEndpointUris("/connect/authorize")
             .SetTokenEndpointUris("/connect/token")
             .SetIntrospectionEndpointUris("/connect/introspect")
-            .SetRevocationEndpointUris("/connect/revocation")
-            .SetLogoutEndpointUris("/connect/logout");
+            .SetRevocationEndpointUris("/connect/revocation");
 
         options
             .AllowAuthorizationCodeFlow()
@@ -127,12 +123,16 @@ builder.Services.AddOpenIddict()
         options.UseAspNetCore()
             .EnableStatusCodePagesIntegration()
             .EnableAuthorizationEndpointPassthrough()
-            .EnableTokenEndpointPassthrough()
-            .EnableLogoutEndpointPassthrough();
+            .EnableTokenEndpointPassthrough();
 
         options.DisableAccessTokenEncryption();
 
         options.RegisterScopes("api", "manage:clients");
+    })
+    .AddValidation(options =>
+    {
+        options.UseLocalServer();
+        options.UseAspNetCore();
     });
 
 var defaultDb = builder.Configuration.GetConnectionString("Default");
@@ -158,7 +158,10 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapRazorPages();
 app.MapControllers(); // exposes OpenIddict endpoints like /connect/token
+
+app.MapRazorPages();
 
 // Public liveness test
 app.MapGet("/", () => "Hello World!");
