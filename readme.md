@@ -64,3 +64,8 @@ Not production-ready yet: dev signing keys, no rate limiting/CAPTCHA, no email v
 - Harden consent/login UX and error handling.
 - Audit logging, structured metrics, and alerts.
 - Lock down admin issuance, remove any dev seeds, and clean malformed OpenIddict app data.
+
+### Certificates (signing/encryption keys)
+- Set `Auth:SigningCertificate:Path/Password` and `Auth:EncryptionCertificate:Path/Password` (PFX/PKCS12). In production, the app will refuse to start without them.
+- Dev fallback uses ephemeral keys only when no cert paths are provided.
+- Rotation plan: add new certs, allow overlap, then remove old keys after token TTLs expire.

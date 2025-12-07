@@ -96,6 +96,8 @@ builder.Services.AddOpenIddict()
         var encryptionCertPath = builder.Configuration["Auth:EncryptionCertificate:Path"];
         var encryptionCertPassword = builder.Configuration["Auth:EncryptionCertificate:Password"];
 
+        var isDev = builder.Environment.IsDevelopment();
+
         if (!string.IsNullOrWhiteSpace(signingCertPath) && File.Exists(signingCertPath))
         {
             var signingCert = X509CertificateLoader.LoadPkcs12(
@@ -104,9 +106,13 @@ builder.Services.AddOpenIddict()
                 X509KeyStorageFlags.MachineKeySet);
             options.AddSigningCertificate(signingCert);
         }
+        else if (isDev)
+        {
+            options.AddEphemeralSigningKey(); // dev fallback
+        }
         else
         {
-            options.AddEphemeralSigningKey(); // fallback for dev
+            throw new InvalidOperationException("Signing certificate is required in production. Configure Auth:SigningCertificate:Path/Password.");
         }
 
         if (!string.IsNullOrWhiteSpace(encryptionCertPath) && File.Exists(encryptionCertPath))
@@ -117,9 +123,13 @@ builder.Services.AddOpenIddict()
                 X509KeyStorageFlags.MachineKeySet);
             options.AddEncryptionCertificate(encryptionCert);
         }
+        else if (isDev)
+        {
+            options.AddEphemeralEncryptionKey(); // dev fallback
+        }
         else
         {
-            options.AddEphemeralEncryptionKey(); // fallback for dev
+            throw new InvalidOperationException("Encryption certificate is required in production. Configure Auth:EncryptionCertificate:Path/Password.");
         }
 
         options.UseAspNetCore()
