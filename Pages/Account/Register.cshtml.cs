@@ -6,16 +6,20 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Sentinel.Infrastructure;
 using Sentinel.Infrastructure.Security;
+using Sentinel.Infrastructure.Services;
+using System.Security.Cryptography;
 
 public class RegisterModel : PageModel
 {
     private readonly SentinelDbContext _db;
     private readonly ISecretHasher _hasher;
+    private readonly IEmailSender _emailSender;
 
-    public RegisterModel(SentinelDbContext db, ISecretHasher hasher)
+    public RegisterModel(SentinelDbContext db, ISecretHasher hasher, IEmailSender emailSender)
     {
         _db = db;
         _hasher = hasher;
+        _emailSender = emailSender;
     }
 
     [BindProperty(SupportsGet = true)]
@@ -75,30 +79,31 @@ public class RegisterModel : PageModel
 
         var hash = _hasher.Hash(password);
         var user = Sentinel.Domain.Entities.User.Create(tenant.Id, normalizedEmail, hash, isAdmin: false);
+        // New users remain inactive until email is verified
+        user.Deactivate();
         _db.Users.Add(user);
+
+        // Issue email verification token
+        var token = GenerateToken();
+        var verification = Sentinel.Domain.Entities.EmailVerificationToken.Create(user.Id, token, TimeSpan.FromHours(24));
+        _db.EmailVerificationTokens.Add(verification);
         await _db.SaveChangesAsync();
 
-        // Auto sign-in; remove if you prefer email verification.
-        var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Name, user.Email),
-            new Claim(ClaimTypes.Email, user.Email),
-            new Claim("tenant_id", user.TenantId.ToString())
-        };
-        if (user.IsAdmin)
-        {
-            claims.Add(new Claim(ClaimTypes.Role, "Admin"));
-            claims.Add(new Claim("role", "Admin"));
-            claims.Add(new Claim("scope", "manage:clients"));
-        }
-        var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
+        // Send verification email (dev logger in this environment)
+        var callbackUrl = Url.Page("/Account/Verify", null, new { token }, Request.Scheme, Request.Host.ToString());
+        await _emailSender.SendAsync(user.Email, "Verify your email", $"Verify your account by visiting: {callbackUrl}");
 
-        if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
-            return LocalRedirect(returnUrl);
-
-        Success = "Account created and signed in.";
+        Success = "Account created. Check your email to verify your account.";
         return Page();
+    }
+
+    private static string GenerateToken()
+    {
+        Span<byte> bytes = stackalloc byte[32];
+        RandomNumberGenerator.Fill(bytes);
+        return Convert.ToBase64String(bytes)
+            .Replace("+", "-")
+            .Replace("/", "_")
+            .TrimEnd('=');
     }
 }
