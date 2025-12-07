@@ -75,7 +75,10 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddControllers();
 builder.Services.AddSingleton<ISecretHasher, Pbkdf2SecretHasher>();
 builder.Services.AddSingleton<HealthCheckResponseFormatter>();
-builder.Services.AddSingleton<Sentinel.Infrastructure.Services.IEmailSender, Sentinel.Infrastructure.Services.DevEmailSender>();
+builder.Services.Configure<Sentinel.Infrastructure.Services.BrevoEmailOptions>(builder.Configuration.GetSection("Email:Brevo"));
+builder.Services.AddHttpClient<Sentinel.Infrastructure.Services.BrevoEmailSender>();
+builder.Services.AddSingleton<Sentinel.Infrastructure.Services.IEmailSender>(sp =>
+    sp.GetRequiredService<Sentinel.Infrastructure.Services.BrevoEmailSender>());
 builder.Services.AddRazorPages();
 
 builder.Services.AddOpenIddict()
