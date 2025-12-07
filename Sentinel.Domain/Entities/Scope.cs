@@ -22,4 +22,14 @@ public class Scope
 
     public static Scope Create(string name, string? description = null, Guid? tenantId = null)
         => new Scope(Guid.NewGuid(), tenantId, name, description);
+
+    public void Update(string name, string? description, Guid? tenantId)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Scope name is required.", nameof(name));
+
+        Name = name.Trim();
+        Description = description?.Trim();
+        TenantId = tenantId;
+    }
 }
