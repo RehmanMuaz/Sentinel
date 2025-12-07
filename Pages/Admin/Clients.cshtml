@@ -9,91 +9,127 @@
 <head>
     <meta charset="utf-8" />
     <title>Clients</title>
+    <style>
+        :root { font-family: 'Inter', Segoe UI, Arial, sans-serif; color: #e5e7eb; background: #070b12; }
+        body { margin: 0; padding: 2rem; background: radial-gradient(circle at 20% 20%, rgba(59,130,246,0.08), transparent 30%), radial-gradient(circle at 80% 0%, rgba(16,185,129,0.08), transparent 25%), #070b12; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1, h2 { margin: 0 0 0.85rem; letter-spacing: 0.3px; }
+        .grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); margin-bottom: 1.5rem; }
+        .card { background: #0d1522; border: 1px solid #1f2a3d; border-radius: 12px; padding: 1.1rem 1.3rem; box-shadow: 0 15px 45px rgba(0,0,0,0.35); }
+        form .row { display: flex; flex-direction: column; margin-bottom: 0.75rem; }
+        label { font-weight: 600; margin-bottom: 0.25rem; color: #cbd5e1; }
+        input, textarea { padding: 0.6rem 0.7rem; border: 1px solid #233146; border-radius: 8px; font-size: 0.95rem; background: #0a101a; color: #e5e7eb; }
+        input:focus, textarea:focus { outline: 1px solid #3b82f6; border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.25); }
+        textarea { min-height: 78px; }
+        button { padding: 0.65rem 1rem; border: none; border-radius: 8px; background: linear-gradient(135deg, #2563eb, #1f5ad3); color: #fff; font-weight: 700; cursor: pointer; transition: transform 0.1s ease, box-shadow 0.1s ease; }
+        button:hover { transform: translateY(-1px); box-shadow: 0 10px 25px rgba(37,99,235,0.25); }
+        .muted { color: #7b8796; font-size: 0.9rem; }
+        .alert { padding: 0.8rem 1rem; border-radius: 8px; margin: 0.85rem 0; border: 1px solid transparent; }
+        .alert.error { background: #3b1f28; color: #fca5a5; border-color: #7f1d1d; }
+        .alert.success { background: #163024; color: #bbf7d0; border-color: #166534; }
+        table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; background: #0b1220; border: 1px solid #1f2a3d; border-radius: 10px; overflow: hidden; }
+        th, td { padding: 0.7rem 0.85rem; border-bottom: 1px solid #1f2a3d; text-align: left; color: #dce3ec; }
+        th { background: #111a2c; font-weight: 700; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 0.5px; }
+        tr:hover td { background: #131f32; }
+        .badge { display: inline-block; padding: 0.25rem 0.6rem; border-radius: 999px; background: rgba(59,130,246,0.15); color: #93c5fd; font-size: 0.8rem; border: 1px solid rgba(59,130,246,0.3); }
+        .actions { display: flex; gap: 0.5rem; }
+        .danger { background: linear-gradient(135deg, #e11d48, #be123c); }
+        .danger:hover { box-shadow: 0 10px 25px rgba(225,29,72,0.35); }
+    </style>
 </head>
 <body>
+    <div class="container">
     <h1>OpenIddict Clients</h1>
 
-    <h2>Create client</h2>
-    <form method="post">
-        @Html.AntiForgeryToken()
-        <div>
-            <label>Client ID</label>
-            <input name="ClientId" value="@Model.ClientId" required />
+    <div class="grid">
+        <div class="card">
+            <h2>Create client</h2>
+            <form method="post">
+                @Html.AntiForgeryToken()
+                <div class="row">
+                    <label>Client ID</label>
+                    <input name="ClientId" value="@Model.ClientId" required />
+                </div>
+                <div class="row">
+                    <label>Display name</label>
+                    <input name="DisplayName" value="@Model.DisplayName" required />
+                </div>
+                <div class="row">
+                    <label><input type="checkbox" name="IsPublic" value="true" @(Model.IsPublic ? "checked" : "") /> Public (no client secret, use PKCE)</label>
+                </div>
+                <div class="row">
+                    <label>Client secret (for confidential)</label>
+                    <input name="ClientSecret" value="@Model.ClientSecret" />
+                </div>
+                <div class="row">
+                    <label><input type="checkbox" name="AllowClientCredentials" value="true" @(Model.AllowClientCredentials ? "checked" : "") /> Allow client credentials</label>
+                </div>
+                <div class="row">
+                    <label><input type="checkbox" name="RequirePkce" value="true" @(Model.RequirePkce ? "checked" : "") /> Require PKCE (public clients)</label>
+                </div>
+                <div class="row">
+                    <label>Redirect URIs (one per line)</label>
+                    <textarea name="RedirectUris">@Model.RedirectUris</textarea>
+                    <div class="muted">Example: https://localhost:3000/callback</div>
+                </div>
+                <div class="row">
+                    <label>Allowed scopes (comma or space separated)</label>
+                    <input name="AllowedScopes" value="@Model.AllowedScopes" />
+                    <div class="muted">Example: openid api manage:clients</div>
+                </div>
+                <button type="submit">Create</button>
+            </form>
         </div>
-        <div>
-            <label>Display name</label>
-            <input name="DisplayName" value="@Model.DisplayName" required />
-        </div>
-        <div>
-            <label><input type="checkbox" name="IsPublic" value="true" @(Model.IsPublic ? "checked" : "") /> Public (no client secret, use PKCE)</label>
-        </div>
-        <div>
-            <label>Client secret (for confidential)</label>
-            <input name="ClientSecret" value="@Model.ClientSecret" />
-        </div>
-        <div>
-            <label><input type="checkbox" name="AllowClientCredentials" value="true" @(Model.AllowClientCredentials ? "checked" : "") /> Allow client credentials</label>
-        </div>
-        <div>
-            <label><input type="checkbox" name="RequirePkce" value="true" @(Model.RequirePkce ? "checked" : "") /> Require PKCE (public clients)</label>
-        </div>
-        <div>
-            <label>Redirect URIs (one per line)</label><br />
-            <textarea name="RedirectUris" rows="3" cols="60">@Model.RedirectUris</textarea>
-        </div>
-        <div>
-            <label>Allowed scopes (comma or space separated)</label>
-            <input name="AllowedScopes" value="@Model.AllowedScopes" />
-        </div>
-        <button type="submit">Create</button>
-    </form>
 
-    <h2>Update client</h2>
-    <form method="post" asp-page-handler="Update">
-        @Html.AntiForgeryToken()
-        <div>
-            <label>Client ID</label>
-            <input name="ClientId" value="@Model.ClientId" required />
+        <div class="card">
+            <h2>Update client</h2>
+            <form method="post" asp-page-handler="Update">
+                @Html.AntiForgeryToken()
+                <div class="row">
+                    <label>Client ID</label>
+                    <input name="ClientId" value="@Model.ClientId" required />
+                </div>
+                <div class="row">
+                    <label>Display name</label>
+                    <input name="DisplayName" value="@Model.DisplayName" required />
+                </div>
+                <div class="row">
+                    <label><input type="checkbox" name="IsPublic" value="true" @(Model.IsPublic ? "checked" : "") /> Public (no client secret, use PKCE)</label>
+                </div>
+                <div class="row">
+                    <label>Client secret (for confidential)</label>
+                    <input name="ClientSecret" value="@Model.ClientSecret" />
+                </div>
+                <div class="row">
+                    <label><input type="checkbox" name="AllowClientCredentials" value="true" @(Model.AllowClientCredentials ? "checked" : "") /> Allow client credentials</label>
+                </div>
+                <div class="row">
+                    <label><input type="checkbox" name="RequirePkce" value="true" @(Model.RequirePkce ? "checked" : "") /> Require PKCE (public clients)</label>
+                </div>
+                <div class="row">
+                    <label>Redirect URIs (one per line)</label>
+                    <textarea name="RedirectUris">@Model.RedirectUris</textarea>
+                </div>
+                <div class="row">
+                    <label>Allowed scopes (comma or space separated)</label>
+                    <input name="AllowedScopes" value="@Model.AllowedScopes" />
+                </div>
+                <button type="submit">Update</button>
+            </form>
         </div>
-        <div>
-            <label>Display name</label>
-            <input name="DisplayName" value="@Model.DisplayName" required />
-        </div>
-        <div>
-            <label><input type="checkbox" name="IsPublic" value="true" @(Model.IsPublic ? "checked" : "") /> Public (no client secret, use PKCE)</label>
-        </div>
-        <div>
-            <label>Client secret (for confidential)</label>
-            <input name="ClientSecret" value="@Model.ClientSecret" />
-        </div>
-        <div>
-            <label><input type="checkbox" name="AllowClientCredentials" value="true" @(Model.AllowClientCredentials ? "checked" : "") /> Allow client credentials</label>
-        </div>
-        <div>
-            <label><input type="checkbox" name="RequirePkce" value="true" @(Model.RequirePkce ? "checked" : "") /> Require PKCE (public clients)</label>
-        </div>
-        <div>
-            <label>Redirect URIs (one per line)</label><br />
-            <textarea name="RedirectUris" rows="3" cols="60">@Model.RedirectUris</textarea>
-        </div>
-        <div>
-            <label>Allowed scopes (comma or space separated)</label>
-            <input name="AllowedScopes" value="@Model.AllowedScopes" />
-        </div>
-        <button type="submit">Update</button>
-    </form>
+    </div>
 
     @if (!string.IsNullOrEmpty(Model.Error))
     {
-        <div style="color:red">@Model.Error</div>
+        <div class="alert error">@Model.Error</div>
     }
     @if (!string.IsNullOrEmpty(Model.Success))
     {
-        <div style="color:green">@Model.Success</div>
+        <div class="alert success">@Model.Success</div>
     }
 
     <h2>Existing clients</h2>
-    <table border="1" cellpadding="4">
+    <table>
         <tr>
             <th>ClientId</th>
             <th>Display</th>
@@ -106,17 +142,20 @@
             <tr>
                 <td>@c.ClientId</td>
                 <td>@c.DisplayName</td>
-                <td>@c.ClientType</td>
+                <td><span class="badge">@c.ClientType</span></td>
                 <td>@string.Join(", ", c.Permissions)</td>
                 <td>
                     <form method="post" asp-page-handler="Delete">
                         @Html.AntiForgeryToken()
                         <input type="hidden" name="ClientId" value="@c.ClientId" />
-                        <button type="submit">Delete</button>
+                        <div class="actions">
+                            <button type="submit" class="danger">Delete</button>
+                        </div>
                     </form>
                 </td>
             </tr>
         }
     </table>
+    </div>
 </body>
 </html>
