@@ -1,0 +1,37 @@
+@page "/connect/authorize"
+@model AuthorizeModel
+@{
+    Layout = null;
+}
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Consent</title>
+</head>
+<body>
+    <h1>Approve access</h1>
+    <p>Client: @Model.ClientId</p>
+    <p>Scopes:</p>
+    <ul>
+        @foreach (var scope in Model.Scopes)
+        {
+            <li>@scope</li>
+        }
+    </ul>
+    <form method="post" asp-page-handler="Accept">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="ReturnUrl" value="@Model.ReturnUrl" />
+        @foreach (var scope in Model.Scopes)
+        {
+            <input type="hidden" name="Scopes" value="@scope" />
+        }
+        <button type="submit">Allow</button>
+    </form>
+    <form method="post" asp-page-handler="Deny">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="ReturnUrl" value="@Model.ReturnUrl" />
+        <button type="submit">Deny</button>
+    </form>
+</body>
+</html>
