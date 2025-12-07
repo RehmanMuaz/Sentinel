@@ -38,11 +38,33 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(_ =>
     ?? builder.Configuration.GetValue<string>("Redis:ConnectionString")
     ?? "localhost:6379"));
 
-builder.Services.AddAuthentication(options => 
+builder.Services.AddAuthentication(options =>
 {
-    options.DefaultAuthenticateScheme = OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
+    options.DefaultScheme = "Combined";
+    options.DefaultChallengeScheme = "Combined";
+})
+.AddPolicyScheme("Combined", "Cookie or Bearer", options =>
+{
+    options.ForwardDefaultSelector = context =>
+        context.Request.Headers.ContainsKey("Authorization")
+            ? OpenIddict.Validation.AspNetCore.OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme
+            : Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme;
+})
+.AddCookie(Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme, options =>
+{
+    options.LoginPath = "/account/login";
+    options.LogoutPath = "/account/logout";
+    options.SlidingExpiration = true;
+    options.Cookie.Name = "sentinel.auth";
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.Always;
+})
+.AddOpenIddictValidation(options =>
+{
+    options.UseLocalServer();
+    options.UseAspNetCore();
 });
+
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("ManageClients", policy =>
@@ -108,13 +130,7 @@ builder.Services.AddOpenIddict()
         options.DisableAccessTokenEncryption();
 
         options.RegisterScopes("api", "manage:clients");
-    })
-    .AddValidation(options =>
-    {
-        options.UseLocalServer();
-        options.UseAspNetCore();
-    }
-);
+    });
 
 var defaultDb = builder.Configuration.GetConnectionString("Default");
 var redisConn = builder.Configuration.GetConnectionString("Redis") ?? builder.Configuration["Redis:ConnectionString"] ?? "localhost:6379";
