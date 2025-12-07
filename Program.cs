@@ -18,7 +18,7 @@ using Sentinel.Infrastructure.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Get Settings
+// Configuration: base + environment + user secrets + env vars. Keep secrets out of appsettings.json.
 builder.Configuration
     .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
     .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
@@ -32,12 +32,13 @@ builder.Services.AddDbContext<SentinelDbContext>(options =>
     options.UseOpenIddict();
 });
 
-// Redis Singleton Middleware
+// Redis multiplexer for caching/locks/blacklists (singleton per app)
 builder.Services.AddSingleton<IConnectionMultiplexer>(_ => 
     ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("Redis") 
     ?? builder.Configuration.GetValue<string>("Redis:ConnectionString")
     ?? "localhost:6379"));
 
+// Combined auth: prefer bearer when Authorization header exists, otherwise cookie
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = "Combined";
@@ -62,6 +63,7 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization(options =>
 {
+    // Admin policy: scope OR admin role/claim
     options.AddPolicy("ManageClients", policy =>
         policy.RequireAssertion(ctx =>
             ctx.User.HasClaim(c => c.Type == "scope" && (c.Value == "manage:clients" || c.Value == "api")) ||
@@ -91,6 +93,7 @@ builder.Services.AddOpenIddict()
             .AllowRefreshTokenFlow()
             .AllowClientCredentialsFlow();
 
+        // Key material: require certs in prod; dev falls back to ephemeral keys
         var signingCertPath = builder.Configuration["Auth:SigningCertificate:Path"];
         var signingCertPassword = builder.Configuration["Auth:SigningCertificate:Password"];
         var encryptionCertPath = builder.Configuration["Auth:EncryptionCertificate:Path"];
