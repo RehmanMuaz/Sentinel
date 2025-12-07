@@ -15,6 +15,7 @@ public class SentinelDbContext : DbContext
     public DbSet<Client> Clients => Set<Client>();
     public DbSet<Scope> Scopes => Set<Scope>();
     public DbSet<User> Users => Set<User>();
+    public DbSet<EmailVerificationToken> EmailVerificationTokens => Set<EmailVerificationToken>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

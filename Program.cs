@@ -16,6 +16,7 @@ using System.IO;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 using Sentinel.Infrastructure.Security;
 using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -74,6 +75,7 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddControllers();
 builder.Services.AddSingleton<ISecretHasher, Pbkdf2SecretHasher>();
 builder.Services.AddSingleton<HealthCheckResponseFormatter>();
+builder.Services.AddSingleton<Sentinel.Infrastructure.Services.IEmailSender, Sentinel.Infrastructure.Services.DevEmailSender>();
 builder.Services.AddRazorPages();
 
 builder.Services.AddOpenIddict()
