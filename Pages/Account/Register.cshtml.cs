@@ -74,7 +74,7 @@ public class RegisterModel : PageModel
         }
 
         var hash = _hasher.Hash(password);
-        var user = Sentinel.Domain.Entities.User.Create(tenant.Id, normalizedEmail, hash);
+        var user = Sentinel.Domain.Entities.User.Create(tenant.Id, normalizedEmail, hash, isAdmin: false);
         _db.Users.Add(user);
         await _db.SaveChangesAsync();
 
@@ -86,6 +86,12 @@ public class RegisterModel : PageModel
             new Claim(ClaimTypes.Email, user.Email),
             new Claim("tenant_id", user.TenantId.ToString())
         };
+        if (user.IsAdmin)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, "Admin"));
+            claims.Add(new Claim("role", "Admin"));
+            claims.Add(new Claim("scope", "manage:clients"));
+        }
         var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
 

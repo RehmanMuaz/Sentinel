@@ -63,7 +63,10 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("ManageClients", policy =>
-        policy.RequireClaim("scope", "manage:clients", "api"));
+        policy.RequireAssertion(ctx =>
+            ctx.User.HasClaim(c => c.Type == "scope" && (c.Value == "manage:clients" || c.Value == "api")) ||
+            ctx.User.IsInRole("Admin") ||
+            ctx.User.HasClaim("role", "Admin")));
 });
 builder.Services.AddControllers();
 builder.Services.AddSingleton<ISecretHasher, Pbkdf2SecretHasher>();

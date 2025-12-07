@@ -9,9 +9,10 @@ public class User
     public string Email { get; private set; } = string.Empty;
     public string PasswordHash { get; private set; } = string.Empty;
     public bool IsActive { get; private set; }
+    public bool IsAdmin { get; private set; }
     public DateTime CreatedAt { get; private set; }
 
-    private User(Guid id, Guid tenantId, string email, string passwordHash, bool isActive, DateTime createdAt)
+    private User(Guid id, Guid tenantId, string email, string passwordHash, bool isActive, bool isAdmin, DateTime createdAt)
     {
         if (tenantId == Guid.Empty)
             throw new ArgumentException("TenantId is required.", nameof(tenantId));
@@ -25,11 +26,12 @@ public class User
         Email = email.Trim().ToLowerInvariant();
         PasswordHash = passwordHash;
         IsActive = isActive;
+        IsAdmin = isAdmin;
         CreatedAt = createdAt;
     }
 
-    public static User Create(Guid tenantId, string email, string passwordHash)
-        => new User(Guid.NewGuid(), tenantId, email, passwordHash, isActive: true, createdAt: DateTime.UtcNow);
+    public static User Create(Guid tenantId, string email, string passwordHash, bool isAdmin = false)
+        => new User(Guid.NewGuid(), tenantId, email, passwordHash, isActive: true, isAdmin: isAdmin, createdAt: DateTime.UtcNow);
 
     public void Deactivate() => IsActive = false;
     public void Activate() => IsActive = true;

@@ -53,6 +53,13 @@ public class LoginModel : PageModel
             new Claim("tenant_id", user.TenantId.ToString())
         };
 
+        if (user.IsAdmin)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, "Admin"));
+            claims.Add(new Claim("role", "Admin"));
+            claims.Add(new Claim("scope", "manage:clients"));
+        }
+
         var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
 
