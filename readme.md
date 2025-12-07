@@ -6,6 +6,12 @@ Sentinel is a **modular, reusable authentication and authorization microservice*
 
 ---
 
+## Screenshots (current UI)
+- Login page  
+  ![Login](common/login-page.png)
+- Admin clients dashboard  
+  ![Admin clients](common/client-dashboard.png)
+
 ## Current Status (dev)
 - Auth code + PKCE, refresh tokens, and client credentials wired via OpenIddict.
 - Domain clients are synced to OpenIddict applications (create/update/delete together).
@@ -39,6 +45,7 @@ Not production-ready yet: no rate limiting/CAPTCHA, no email verification/reset,
 ### Flows
 - Auth code + PKCE: `/connect/authorize` → code → `/connect/token` (with code_verifier) → access/ID/refresh tokens.
 - Client credentials: `/connect/token` with `grant_type=client_credentials` (confidential clients with secrets; or public if allowed).
+
 
 ---
 
