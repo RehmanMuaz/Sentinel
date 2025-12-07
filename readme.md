@@ -14,7 +14,7 @@ Sentinel is a **modular, reusable authentication and authorization microservice*
 - Admin flag (`IsAdmin`) emits admin role/scope on login for protected admin areas.
 - Health checks for Postgres/Redis.
 
-Not production-ready yet: dev signing keys, no rate limiting/CAPTCHA, no email verification/reset, HTTPS/HSTS not enforced, and no audit/logging/rotation.
+Not production-ready yet: no rate limiting/CAPTCHA, no email verification/reset, and no audit/logging/rotation.
 
 ---
 
@@ -64,6 +64,7 @@ Not production-ready yet: dev signing keys, no rate limiting/CAPTCHA, no email v
 - Harden consent/login UX and error handling.
 - Audit logging, structured metrics, and alerts.
 - Lock down admin issuance, remove any dev seeds, and clean malformed OpenIddict app data.
+- Rate limiting added (auth/token endpoints); tune values per environment.
 
 ### Certificates (signing/encryption keys)
 - Set `Auth:SigningCertificate:Path/Password` and `Auth:EncryptionCertificate:Path/Password` (PFX/PKCS12). In production, the app will refuse to start without them.

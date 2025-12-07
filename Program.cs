@@ -15,6 +15,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.IO;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 using Sentinel.Infrastructure.Security;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -150,6 +151,28 @@ builder.Services.AddOpenIddict()
         options.UseAspNetCore();
     });
 
+// Rate limiting: apply conservative limits to auth/token endpoints
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+    options.AddSlidingWindowLimiter("auth-limit", o =>
+    {
+        o.PermitLimit = 10;
+        o.Window = TimeSpan.FromMinutes(1);
+        o.SegmentsPerWindow = 6;
+        o.QueueLimit = 2;
+        o.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+    });
+
+    options.AddFixedWindowLimiter("token-limit", o =>
+    {
+        o.PermitLimit = 5;
+        o.Window = TimeSpan.FromMinutes(1);
+        o.QueueLimit = 0;
+    });
+});
+
 var defaultDb = builder.Configuration.GetConnectionString("Default");
 var redisConn = builder.Configuration.GetConnectionString("Redis") ?? builder.Configuration["Redis:ConnectionString"] ?? "localhost:6379";
 
@@ -173,6 +196,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 app.UseHttpsRedirection();
+app.UseRateLimiter();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
