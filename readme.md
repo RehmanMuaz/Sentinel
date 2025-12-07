@@ -1,70 +1,66 @@
 # Sentinel
 
- *If you’re tired of copy-pasting login code into every new project, Sentinel is meant to be the one place that handles it all.*
+*A central OAuth2/OpenID Connect provider so you stop copy-pasting auth into every app.*
 
-Sentinel is a **modular, reusable authentication and authorization microservice** built with **ASP.NET Core**.  
-It’s designed to act as a **central OAuth2 / OpenID Connect provider** that you can plug into multiple apps and services (portfolios, internal tools, SaaS products, etc.) without rewriting auth every time.
-
----
-
-## Key Features
-
-- **Standards-based Auth**
-  - OAuth2 + OpenID Connect flows (authorization code + PKCE, client credentials, refresh tokens)
-  - JWT access tokens with a public JWKs endpoint for validation
-  - Well-known configuration endpoint (`/.well-known/openid-configuration`)
-
-- **Modular & Extensible Design**
-  - Clean separation of **Domain**, **Application**, **Infrastructure**, and **API** layers
-  - Pluggable user store, token store, and identity providers
-  - Easy to add new login methods (local accounts, Google, GitHub, etc.)
-
-- **Multi-Tenant & Multi-Client**
-  - First-class support for **tenants** (e.g. apps, future SaaS projects)
-  - Configurable **clients** with their own redirect URIs, allowed scopes, and token lifetimes
-
-- **Built for Real-World Use**
-  - ASP.NET Core for high performance and long-term support
-  - PostgreSQL for persistent data storage
-  - Redis-ready for sessions, blacklisting, and rate limiting
-  - Container-friendly (Docker) for easy deployment
-
-- **Integration-Friendly**
-  - Any backend (FastAPI, Node, Next.js, etc.) can validate tokens via standard JWT + JWKs
-  - Frontend apps can use standard OAuth2/OIDC flows with redirect-based login
+Sentinel is a **modular, reusable authentication and authorization microservice** built with **ASP.NET Core**. It’s designed to act as a **central OAuth2 / OpenID Connect provider** for web/mobile apps, internal tools, and services.
 
 ---
 
-## Planned Features
+## Current Status (dev)
+- Auth code + PKCE, refresh tokens, and client credentials wired via OpenIddict.
+- Domain clients are synced to OpenIddict applications (create/update/delete together).
+- Admin UI/API for OpenIddict clients (`/admin/clients`, `/api/openiddict/clients`).
+- User/tenant/scope CRUD APIs; tenant registration page; login/consent pages.
+- Admin flag (`IsAdmin`) emits admin role/scope on login for protected admin areas.
+- Health checks for Postgres/Redis.
 
-- Revocation + logout everywhere: short-lived blacklist of token jti/subject pairs in Redis so revoked tokens expire without bloating Postgres.
-- Refresh token rotation tracking: track the latest refresh-token family key to reject older tokens quickly with minimal DB hits.
-- Rate limiting / abuse protection: sliding-window throttles for login, reset, and token endpoints backed by Redis.
-- Ephemeral protocol state: PKCE verifiers, nonces, device codes, and one-time challenges stored with short TTLs in Redis.
-- Session cache: cached user/claim snapshots to speed validation while keeping Postgres as source of truth.
-- Distributed locks: guard against double consumption of auth codes/refresh tokens under load.
-- Admin + self-service consoles: manage tenants, clients, scopes, users, MFA, and consents.
-- External IdPs: plug-and-play Google/GitHub/OIDC/SAML with claims mapping and account linking.
-- Observability & audit: structured logs, metrics, traces, and audit trails for sign-ins, token events, and admin actions.
-- Deployment hardening: health checks, key rotation jobs, backup/restore guidance, and secure defaults (CSP, HSTS).
+Not production-ready yet: dev signing keys, no rate limiting/CAPTCHA, no email verification/reset, HTTPS/HSTS not enforced, and no audit/logging/rotation.
 
 ---
 
-## High-Level Architecture
+## Quickstart (dev)
+1) Requirements: .NET SDK 10, Postgres, Redis.
+2) Apply migrations:  
+   `dotnet ef database update --project Sentinel.Infrastructure --startup-project Sentinel.csproj`
+3) Run: `dotnet run` (or `dotnet watch run` for hot reload).
+4) Create an admin user (set `IsAdmin=true` in the Users table) and log in via `/account/login`.
+5) Register a client via `/admin/clients` (public+PKCE for SPAs; confidential+secret for backends).
 
-- `Sentinel.Domain` – Core entities and business rules (User, Tenant, Client, Role, Token, etc.)
-- `Sentinel.Application` – Use cases / services (register, login, issue tokens, revoke tokens, etc.)
-- `Sentinel.Infrastructure` – Data access (EF Core, PostgreSQL), Redis, email/SMS providers
-- `Sentinel.Api` – ASP.NET Core API surface, endpoints, middleware, and configuration
+### Key endpoints
+- Login: `/account/login`
+- Register (tenant-slugged): `/t/{slug}/account/register`
+- Consent/authorize: `/connect/authorize`
+- Token: `/connect/token`
+- Userinfo: `/connect/userinfo`
+- Health: `/health`
+- Admin UI: `/admin/clients` (admin-only)
+- Admin APIs: `/api/openiddict/clients`, `/api/users`, `/api/tenants`, `/api/scopes`, `/api/clients`
 
-This structure keeps the auth logic **isolated, testable, and reusable** across any number of projects.
+### Flows
+- Auth code + PKCE: `/connect/authorize` → code → `/connect/token` (with code_verifier) → access/ID/refresh tokens.
+- Client credentials: `/connect/token` with `grant_type=client_credentials` (confidential clients with secrets; or public if allowed).
+
+---
+
+## Architecture
+- `Sentinel.Domain` — Core entities and rules (User, Tenant, Client, Scope, etc.)
+- `Sentinel.Application` — Use cases/services (issuing tokens, user management, etc.)
+- `Sentinel.Infrastructure` — EF Core/Postgres, Redis, OpenIddict stores, security helpers
+- `Sentinel.Api` — ASP.NET Core surface: OpenIddict endpoints, admin APIs, Razor UI
 
 ---
 
 ## Use Cases
+- Central auth for microservices, web/mobile apps, and internal tools.
+- Multi-tenant auth with per-tenant clients/scopes.
+- Admin UI to onboard clients without code changes.
 
-- Central auth server for:
-  - Microservices
-  - Web apps (Next.js, React, etc.)
-  - Mobile apps
-  - Internal tools & admin dashboards
+---
+
+## Remaining Work Before Prod
+- Enforce HTTPS/HSTS; add rate limiting/abuse protection.
+- Persist signing/encryption keys; add rotation.
+- Email verification, password reset, optional MFA.
+- Harden consent/login UX and error handling.
+- Audit logging, structured metrics, and alerts.
+- Lock down admin issuance, remove any dev seeds, and clean malformed OpenIddict app data.

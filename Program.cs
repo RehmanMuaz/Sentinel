@@ -72,7 +72,6 @@ builder.Services.AddControllers();
 builder.Services.AddSingleton<ISecretHasher, Pbkdf2SecretHasher>();
 builder.Services.AddSingleton<HealthCheckResponseFormatter>();
 builder.Services.AddRazorPages();
-builder.Services.AddRazorPages();
 
 builder.Services.AddOpenIddict()
     .AddCore(options =>
@@ -156,6 +155,10 @@ if (!string.IsNullOrWhiteSpace(redisConn))
 
 var app = builder.Build();
 
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHsts();
+}
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();
