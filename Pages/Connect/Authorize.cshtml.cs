@@ -28,11 +28,14 @@ public class AuthorizeModel : PageModel
 
     public IActionResult OnGet()
     {
-        var request = HttpContext.GetOpenIddictServerRequest();
-        if (request is null) return BadRequest("Missing OpenID Connect request.");
+        var clientId = Request.Query["client_id"].ToString();
+        var scopeParam = Request.Query["scope"].ToString();
+        var scopes = scopeParam.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList();
 
-        ClientId = request.ClientId ?? string.Empty;
-        Scopes = request.GetScopes().ToList();
+        if (string.IsNullOrWhiteSpace(clientId)) return BadRequest("Missing client_id.");
+
+        ClientId = clientId;
+        Scopes = scopes;
         ReturnUrl = Request.Path + Request.QueryString;
         return Page();
     }
