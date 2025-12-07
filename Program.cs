@@ -85,7 +85,8 @@ builder.Services.AddOpenIddict()
             .SetAuthorizationEndpointUris("/connect/authorize")
             .SetTokenEndpointUris("/connect/token")
             .SetIntrospectionEndpointUris("/connect/introspect")
-            .SetRevocationEndpointUris("/connect/revocation");
+            .SetRevocationEndpointUris("/connect/revocation")
+            .SetLogoutEndpointUris("/connect/logout");
 
         options
             .AllowAuthorizationCodeFlow()
@@ -125,7 +126,9 @@ builder.Services.AddOpenIddict()
 
         options.UseAspNetCore()
             .EnableStatusCodePagesIntegration()
-            .EnableTokenEndpointPassthrough();
+            .EnableAuthorizationEndpointPassthrough()
+            .EnableTokenEndpointPassthrough()
+            .EnableLogoutEndpointPassthrough();
 
         options.DisableAccessTokenEncryption();
 
