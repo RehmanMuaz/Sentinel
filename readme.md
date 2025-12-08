@@ -1,3 +1,5 @@
+![Logo](common/logo-light.svg)
+
 # Sentinel
 
 *A central OAuth2/OpenID Connect provider so you stop copy-pasting auth into every app.*
